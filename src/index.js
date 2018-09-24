@@ -1,47 +1,71 @@
-module.exports = function solveSudoku(matrix) {
-	let a = 0, b = 0;
-	for(let i = 0; i<9; i++){
-		for(let j = 0; j<9;j++){
-			let c = 1;
-			if(matrix[i][j]==0){
-				while(matrix[i][j]!=c){
-					if(i<3) { a = 0 }
-						else if(i<6){ a = 3 }
-							else { a = 6 }
-					if(j<3) { b = 0 }
-						else if(j<6){ b = 3 }
-							else { b = 6 }
-					if(checkMatrix(a,b,c)&&checkCol(j,c)&&checkRow(i,c)){
-						matrix[i][j] = c;
-					}
-					else{
-						c++;
-					}
-				}
-			}
-		}
-	}
-	return matrix;
+module.exports = function solveSudoku(matrix) { 
+	let solvedMatrix = matrix; 
 
+	if(solved(matrix)){ 
+	solvedMatrix = matrix; 
+	} 
 
-	function checkMatrix(a,b,c){
-		for(let i = a; i<a+3; i++){
-			for(let j = b; j<b+3; j++){
-				if(matrix[i][j]==c) return false;
-			}
-		}
-		return true;
+	return solvedMatrix; 
+	} 
+
+	function solved(matrix){ 
+	let cell = []; 
+	if(!findEmptySpace(matrix, cell)){ 
+		return true; 
+	} 
+
+	let row = cell[0]; 
+	let col = cell[1]; 
+
+	for(let number = 1; number < 10; number++){ 
+	if(!checkRow(matrix, row, number) && !checkCol(matrix, col, number) && !checkBox(matrix, row - row % 3, col - col % 3, number)){ 
+		matrix[row][col] = number; 
+		if(solved(matrix)){ 
+			return true; 
+		} 
+		matrix[row][col] = 0; 
+		} 
+	} 
+	return false; 
+	} 
+
+	function findEmptySpace(matrix, cell){ 
+	for(let i = 0; i < 9; i++){ 
+		for(let j = 0; j < 9; j++){ 
+			if(matrix[i][j] == 0){ 
+				cell[0] = i; 
+				cell[1] = j; 
+				return true; 
+			} 
+		} 
+	} 
+	return false; 
+	} 
+
+	function checkRow(matrix, row, number){ 
+	for(let i = 0; i < 9; i++){ 
+		if(matrix[row][i] == number){ 
+		return true; 
+		} 
+	} 
+	return false; 
+	} 
+
+	function checkCol(matrix, col, number){ 
+	for(let i = 0; i < 9; i++){ 
+		if(matrix[i][col] == number){ 
+		return true; 
+		} 
+	} 
+	return false; 
+	} 
+	function checkBox(matrix, row, col, number){ 
+	for(let i = 0; i < 3; i++){ 
+		for(let j = 0; j < 3; j++){ 
+			if(matrix[i + row][j + col] == number){ 
+				return true; 
+			} 
+		} 
+	} 
+	return false; 
 	}
-	function checkCol(j,c){
-		for(let i = 0; i<9; i++){
-			if(matrix[i][j]==c) return false;
-		}
-		return true;
-	}
-	function checkRow(i,c){
-		for(let j = 0; j<9; j++){
-			if(matrix[i][j]==c) return false;
-		}
-		return true;
-	}
-}
